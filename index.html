@@ -9,6 +9,7 @@ body {
     margin: 0;
     font-family: Arial, sans-serif;
     background: linear-gradient(135deg, #6a3df0, #9b6cff);
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -21,15 +22,15 @@ body {
     width: 90%;
     max-width: 420px;
     padding: 25px;
-    border-radius: 15px;
+    border-radius: 16px;
     text-align: center;
     box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+    z-index: 2;
 }
 
 .score {
     text-align: right;
     font-size: 14px;
-    opacity: 0.9;
 }
 
 .question {
@@ -67,10 +68,42 @@ body {
     color: #fff;
     flex: 1;
 }
+
+/* ❤️ Floating hearts */
+.heart {
+    position: fixed;
+    bottom: -20px;
+    font-size: 20px;
+    animation: floatUp 6s linear infinite;
+    opacity: 0.7;
+    z-index: 1;
+}
+
+@keyframes floatUp {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-110vh);
+        opacity: 0;
+    }
+}
+
+/* Final screens */
+.final img {
+    width: 150px;
+    margin-top: 15px;
+}
 </style>
 </head>
 
 <body>
+
+<!-- 🎵 Romantic background music -->
+<audio autoplay loop>
+  <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg">
+</audio>
 
 <div class="quiz-box">
     <div class="score" id="score">Score: 0</div>
@@ -79,10 +112,10 @@ body {
 </div>
 
 <script>
-/* 🔴 PASTE YOUR FORMSPREE LINK BELOW */
-const formURL = "https://formspree.io/f/mykpnbez";
+/* 🔴 REPLACE THIS WITH YOUR FORMSPREE URL */
+const formURL = "PASTE_YOUR_FORMSPREE_URL_HERE";
 
-/* ✏️ QUESTIONS (EDIT LATER IF YOU WANT) */
+/* QUESTIONS */
 const quiz = [
     {
         question: "Hey baby 💜 Ready to play a small game with me?",
@@ -100,7 +133,7 @@ const quiz = [
         answer: 3
     },
     {
-        question: "No matter the distance… will you always be mine? 💍",
+        question: "Do you love me? 😌",
         yesno: true,
         answer: "yes"
     }
@@ -113,12 +146,13 @@ const questionEl = document.getElementById("question");
 const optionsEl = document.getElementById("options");
 const scoreEl = document.getElementById("score");
 
-function sendAnswer(question, given, correct) {
+/* Save answer */
+function sendAnswer(q, given, correct) {
     fetch(formURL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            question: question,
+            question: q,
             answer_given: given,
             correct_answer: correct,
             result: given === correct ? "Correct ❤️" : "Wrong 💔"
@@ -133,14 +167,14 @@ function loadQuestion() {
     scoreEl.innerText = "Score: " + score;
 
     if (q.yesno) {
-        ["yes", "no"].forEach(val => {
+        ["yes","no"].forEach(val => {
             const btn = document.createElement("div");
             btn.className = "option " + (val === "yes" ? "yes" : "no");
             btn.innerText = val === "yes" ? "Yes 💚" : "No 💔";
             btn.onclick = () => {
                 sendAnswer(q.question, val, q.answer);
                 if (val === q.answer) score += 10;
-                nextQuestion();
+                next();
             };
             optionsEl.appendChild(btn);
         });
@@ -152,26 +186,71 @@ function loadQuestion() {
             btn.onclick = () => {
                 sendAnswer(q.question, opt, q.options[q.answer]);
                 if (i === q.answer) score += 10;
-                nextQuestion();
+                next();
             };
             optionsEl.appendChild(btn);
         });
     }
 }
 
-function nextQuestion() {
+function next() {
     current++;
     if (current < quiz.length) {
         loadQuestion();
     } else {
-        questionEl.innerText = "That’s it 💜";
-        optionsEl.innerHTML = `
-            <div style="font-size:18px;">
-                Your final score: <b>${score}</b> 🥰<br><br>
-                I loved every answer ❤️
-            </div>`;
+        finalQuestion();
     }
 }
+
+/* 🔥 FINAL QUESTION (LIKE VIDEO) */
+function finalQuestion() {
+    questionEl.innerText = "Will you be mine forever? 💍❤️";
+    optionsEl.innerHTML = "";
+
+    const yesBtn = document.createElement("div");
+    yesBtn.className = "option yes";
+    yesBtn.innerText = "YES 💖";
+    yesBtn.onclick = showHappy;
+
+    const noBtn = document.createElement("div");
+    noBtn.className = "option no";
+    noBtn.innerText = "NO 😐";
+    noBtn.onclick = showAngry;
+
+    optionsEl.appendChild(yesBtn);
+    optionsEl.appendChild(noBtn);
+}
+
+/* 😍 YES SCREEN */
+function showHappy() {
+    optionsEl.innerHTML = `
+    <div class="final">
+        <h2>I knew it 😍💜</h2>
+        <p>Distance can never break us ❤️</p>
+        <img src="https://i.imgur.com/1Xq9BiH.png">
+    </div>`;
+}
+
+/* 😡 NO SCREEN (NO OPTION 😤) */
+function showAngry() {
+    optionsEl.innerHTML = `
+    <div class="final">
+        <h2>No option 😡</h2>
+        <p>You are stuck with me 😤❤️</p>
+        <img src="https://i.imgur.com/WxNkK7J.png">
+    </div>`;
+}
+
+/* ❤️ Floating hearts generator */
+setInterval(() => {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerText = "❤️";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = (Math.random() * 10 + 15) + "px";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 6000);
+}, 500);
 
 loadQuestion();
 </script>
