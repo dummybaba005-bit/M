@@ -25,7 +25,6 @@ body {
     border-radius: 18px;
     text-align: center;
     box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-    transition: transform 0.15s;
     position: relative;
 }
 
@@ -54,12 +53,6 @@ body {
     margin: 10px 0;
     cursor: pointer;
     font-weight: bold;
-    transition: 0.25s;
-    position: relative;
-}
-
-.option:hover {
-    background: #bbdefb;
 }
 
 .yes {
@@ -72,12 +65,10 @@ body {
     color: #fff;
 }
 
-input {
-    padding: 10px;
-    width: 80%;
-    border-radius: 8px;
-    border: none;
-    margin-bottom: 10px;
+.wrong-msg {
+    margin-top: 10px;
+    font-size: 14px;
+    opacity: 0.95;
 }
 
 /* floating hearts */
@@ -96,21 +87,24 @@ input {
     }
 }
 
-/* wrong message */
-.wrong-msg {
-    font-size: 14px;
-    margin-top: 8px;
-    opacity: 0.9;
+input {
+    padding: 10px;
+    width: 80%;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 10px;
 }
 </style>
 </head>
 
 <body>
 
+<!-- 🎵 Tamil-style romantic instrumental (autoplay-safe) -->
 <audio id="bgMusic" loop>
-  <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg">
+  <source src="https://cdn.pixabay.com/audio/2023/03/30/audio_3b7a7a2c2e.mp3" type="audio/mpeg">
 </audio>
 
+<!-- angry sound -->
 <audio id="angrySound">
   <source src="https://www.soundjay.com/human/grunt-1.mp3" type="audio/mpeg">
 </audio>
@@ -159,6 +153,7 @@ const quiz = [
 ];
 
 let current = 0;
+
 const box = document.getElementById("box");
 const qEl = document.getElementById("question");
 const optEl = document.getElementById("options");
@@ -206,7 +201,14 @@ function handleAnswer(given, correct) {
         angry.play();
         shakeBox();
         showWrongMsg();
+
+        setTimeout(nextStep, 1500); // 👈 FIXED
+    } else {
+        nextStep();
     }
+}
+
+function nextStep() {
     current++;
     current < quiz.length ? loadQuestion() : finalQuestion();
 }
