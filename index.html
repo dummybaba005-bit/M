@@ -2,31 +2,31 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>For My Love ❤️</title>
+<title>For My Love 💙</title>
 
 <style>
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #6a3df0, #9b6cff);
+    background: linear-gradient(135deg, #0f4c81, #1e90ff);
+    height: 100vh;
     overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
     color: #fff;
 }
 
 .quiz-box {
-    background: #7b4dff;
+    background: #0b3c68;
     width: 90%;
     max-width: 420px;
     padding: 25px;
-    border-radius: 16px;
+    border-radius: 18px;
     text-align: center;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.35);
-    z-index: 2;
-    transition: transform 0.1s;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    transition: transform 0.15s;
+    position: relative;
 }
 
 .shake {
@@ -41,36 +41,46 @@ body {
     100% { transform: translateX(0); }
 }
 
-.score {
-    text-align: right;
-    font-size: 14px;
-}
-
 .question {
     font-size: 20px;
     margin: 20px 0;
 }
 
 .option {
-    background: #fff;
-    color: #333;
+    background: #e3f2fd;
+    color: #0b3c68;
     padding: 12px;
-    border-radius: 8px;
+    border-radius: 10px;
     margin: 10px 0;
     cursor: pointer;
+    font-weight: bold;
+    transition: 0.25s;
+    position: relative;
+}
+
+.option:hover {
+    background: #bbdefb;
 }
 
 .yes {
-    background: #2ecc71;
+    background: #2196f3;
     color: #fff;
 }
 
 .no {
-    background: #e74c3c;
+    background: #1565c0;
     color: #fff;
 }
 
-/* Hearts */
+input {
+    padding: 10px;
+    width: 80%;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 10px;
+}
+
+/* floating hearts */
 .heart {
     position: fixed;
     bottom: -20px;
@@ -86,20 +96,17 @@ body {
     }
 }
 
-/* Password */
-input {
-    padding: 10px;
-    width: 80%;
-    border-radius: 6px;
-    border: none;
-    margin-bottom: 10px;
+/* wrong message */
+.wrong-msg {
+    font-size: 14px;
+    margin-top: 8px;
+    opacity: 0.9;
 }
 </style>
 </head>
 
 <body>
 
-<!-- 🎵 Audio -->
 <audio id="bgMusic" loop>
   <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg">
 </audio>
@@ -110,13 +117,12 @@ input {
 
 <div class="quiz-box" id="box">
     <div class="question" id="question">
-        Tap to Start ❤️<br><br>
+        Tap to Start 💙<br><br>
         Enter Password 🔐
     </div>
-
     <div id="options">
         <input type="password" id="password" placeholder="DDMMYYYY">
-        <div class="option yes" onclick="checkPassword()">Unlock 💜</div>
+        <div class="option yes" onclick="checkPassword()">Unlock 💙</div>
     </div>
 </div>
 
@@ -126,20 +132,33 @@ const correctPassword = "20062000";
 
 const quiz = [
     {
-        question: "Hey baby 💜 Ready to play a small game?",
-        yesno: true,
-        answer: "yes"
+        question: "Which is our favourite place? 💙",
+        options: ["Beaches 🏖️","Mountains ⛰️","Pubs 🍻","Movie Theatre 🎬"],
+        answer: 3
     },
     {
-        question: "Where do you want to go with me?",
-        options: ["Beach 🏖️", "Mountains ⛰️", "Anywhere with you ❤️"],
+        question: "Who gets angry faster? 😅",
+        options: ["You 😤","Me 😬","Both 😂","Depends on mood 😌"],
         answer: 2
+    },
+    {
+        question: "If we fight, who should say sorry first?",
+        options: ["You 😏","Me 😇","Both 🤝","No fighting allowed ❌"],
+        answer: 2
+    },
+    {
+        question: "What makes me instantly happy?",
+        options: ["Your smile 😊","Your voice 🎧","Your care ❤️","All of these 💙"],
+        answer: 3
+    },
+    {
+        question: "No matter the distance, will you stay with me? 🌍❤️",
+        yesno: true,
+        answer: "yes"
     }
 ];
 
 let current = 0;
-let score = 0;
-
 const box = document.getElementById("box");
 const qEl = document.getElementById("question");
 const optEl = document.getElementById("options");
@@ -147,21 +166,15 @@ const music = document.getElementById("bgMusic");
 const angry = document.getElementById("angrySound");
 
 function checkPassword() {
-    const val = document.getElementById("password").value;
-    if (val === correctPassword) {
+    if (document.getElementById("password").value === correctPassword) {
         music.play();
-        startQuiz();
+        createHearts();
+        loadQuestion();
     } else {
         angry.play();
-        box.classList.add("shake");
-        setTimeout(() => box.classList.remove("shake"), 400);
-        qEl.innerText = "Wrong password 😤 Try again!";
+        shakeBox();
+        qEl.innerText = "Wrong password 😤";
     }
-}
-
-function startQuiz() {
-    loadQuestion();
-    setInterval(createHeart, 500);
 }
 
 function loadQuestion() {
@@ -173,8 +186,8 @@ function loadQuestion() {
         ["yes","no"].forEach(v => {
             const b = document.createElement("div");
             b.className = "option " + (v === "yes" ? "yes" : "no");
-            b.innerText = v === "yes" ? "Yes 💚" : "No 💔";
-            b.onclick = () => answer(v, q.answer);
+            b.innerText = v === "yes" ? "Yes 💙" : "No 😐";
+            b.onclick = () => handleAnswer(v, q.answer);
             optEl.appendChild(b);
         });
     } else {
@@ -182,56 +195,71 @@ function loadQuestion() {
             const b = document.createElement("div");
             b.className = "option";
             b.innerText = o;
-            b.onclick = () => answer(o, q.options[q.answer]);
+            b.onclick = () => handleAnswer(i, q.answer);
             optEl.appendChild(b);
         });
     }
 }
 
-function answer(given, correct) {
-    fetch(formURL,{
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body:JSON.stringify({ question:qEl.innerText, given, correct })
-    });
-
+function handleAnswer(given, correct) {
     if (given !== correct) {
         angry.play();
-        box.classList.add("shake");
-        setTimeout(()=>box.classList.remove("shake"),400);
-    } else score += 10;
-
+        shakeBox();
+        showWrongMsg();
+    }
     current++;
     current < quiz.length ? loadQuestion() : finalQuestion();
 }
 
+function showWrongMsg() {
+    const msg = document.createElement("div");
+    msg.className = "wrong-msg";
+    msg.innerText = "I liked your over confidence 😌 but as usual you’re wrong 😜";
+    optEl.appendChild(msg);
+}
+
 function finalQuestion() {
-    qEl.innerText = "Will you be mine forever? 💍";
-    optEl.innerHTML = `
-        <div class="option yes" onclick="happy()">YES 💖</div>
-        <div class="option no" onclick="angryNo()">NO 😐</div>
-    `;
+    qEl.innerText = "Will you be mine forever? 💍💙";
+    optEl.innerHTML = "";
+
+    const yes = document.createElement("div");
+    yes.className = "option yes";
+    yes.innerText = "YES 💙";
+    yes.onclick = () => {
+        qEl.innerText = "I knew it 💙🥰";
+        optEl.innerHTML = "No distance can break us 💫";
+    };
+
+    const no = document.createElement("div");
+    no.className = "option no";
+    no.innerText = "NO 😐";
+    no.onmouseover = moveNoButton;
+
+    optEl.appendChild(yes);
+    optEl.appendChild(no);
 }
 
-function happy() {
-    qEl.innerText = "I knew it 😍❤️";
-    optEl.innerHTML = "No distance can break us 💜";
+function moveNoButton(e) {
+    const btn = e.target;
+    btn.style.position = "absolute";
+    btn.style.left = Math.random() * 60 + "%";
+    btn.style.top = Math.random() * 60 + "%";
 }
 
-function angryNo() {
-    angry.play();
+function shakeBox() {
     box.classList.add("shake");
-    qEl.innerText = "NO OPTION 😡";
-    optEl.innerHTML = "You’re stuck with me 😤❤️";
+    setTimeout(() => box.classList.remove("shake"), 400);
 }
 
-function createHeart() {
-    const h = document.createElement("div");
-    h.className = "heart";
-    h.innerText = "❤️";
-    h.style.left = Math.random()*100 + "vw";
-    document.body.appendChild(h);
-    setTimeout(()=>h.remove(),6000);
+function createHearts() {
+    setInterval(() => {
+        const h = document.createElement("div");
+        h.className = "heart";
+        h.innerText = "💙";
+        h.style.left = Math.random() * 100 + "vw";
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 6000);
+    }, 500);
 }
 </script>
 
