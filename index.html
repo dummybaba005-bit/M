@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>My Love 💙</title>
+<title>For My Love 💙</title>
 
 <style>
 body {
@@ -19,38 +19,29 @@ body {
 
 .quiz-box {
     background: #0b3c68;
-    width: 90%;
+    width: 92%;
     max-width: 420px;
-    padding: 25px;
-    border-radius: 18px;
+    min-height: 420px;
+    padding: 28px;
+    border-radius: 22px;
     text-align: center;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-    position: relative;
-}
-
-.shake {
-    animation: shake 0.4s;
-}
-
-@keyframes shake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-6px); }
-    50% { transform: translateX(6px); }
-    75% { transform: translateX(-6px); }
-    100% { transform: translateX(0); }
+    box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .question {
-    font-size: 20px;
-    margin: 20px 0;
+    font-size: 22px;
+    margin-bottom: 20px;
 }
 
 .option {
     background: #e3f2fd;
     color: #0b3c68;
-    padding: 12px;
-    border-radius: 10px;
-    margin: 10px 0;
+    padding: 14px;
+    border-radius: 12px;
+    margin: 12px 0;
     cursor: pointer;
     font-weight: bold;
 }
@@ -65,53 +56,36 @@ body {
     color: #fff;
 }
 
-/* BIGGER wrong message */
 .wrong-msg {
-    margin-top: 15px;
-    font-size: 16px;
+    margin-top: 18px;
+    font-size: 17px;
     font-weight: bold;
     color: #ffeb3b;
 }
 
-/* floating hearts */
-.heart {
-    position: fixed;
-    bottom: -20px;
-    font-size: 18px;
-    animation: floatUp 6s linear infinite;
-    opacity: 0.7;
-}
-
-@keyframes floatUp {
-    to {
-        transform: translateY(-110vh);
-        opacity: 0;
-    }
-}
-
 input {
-    padding: 10px;
-    width: 80%;
-    border-radius: 8px;
+    padding: 14px;
+    width: 85%;
+    border-radius: 10px;
     border: none;
-    margin-bottom: 10px;
+    margin-bottom: 14px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- 🎵 OLD background music (kept) -->
+<!-- 🎵 Background music -->
 <audio id="bgMusic" loop>
-  <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg">
+  <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3">
 </audio>
 
-<!-- 🔊 Wrong answer beep -->
+<!-- 🔔 Soft beep -->
 <audio id="beepSound">
-  <source src="https://www.soundjay.com/buttons/sounds/beep-07.mp3" type="audio/mpeg">
+  <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_4b6f8f62b6.mp3">
 </audio>
 
-<div class="quiz-box" id="box">
+<div class="quiz-box">
     <div class="question" id="question">
         Tap to Start 💙<br><br>
         Enter Password 🔐
@@ -123,52 +97,45 @@ input {
 </div>
 
 <script>
-const formURL = "PASTE_YOUR_FORMSPREE_URL_HERE";
+/* 🔴 PUT YOUR FORMSPREE URL HERE */
+const formURL = "https://formspree.io/f/mykpnbez";
+
 const correctPassword = "20062000";
 
 const quiz = [
     {
-        question: "Which is our favourite place? 💙",
-        options: ["Beaches 🏖️","Mountains ⛰️","Pubs 🍻","Movie Theatre 🎬"],
+        question: "Which is our favourite place?",
+        options: ["Beaches","Mountains","Pubs","Movie Theatre"],
         answer: 3
     },
     {
-        question: "Who gets angry faster? 😅",
-        options: ["You 😤","Me 😬","Both 😂","Depends on mood 😌"],
+        question: "Who gets angry faster?",
+        options: ["You","Me","Both","Depends"],
         answer: 2
     },
     {
-        question: "If we fight, who should say sorry first?",
-        options: ["You 😏","Me 😇","Both 🤝","No fighting allowed ❌"],
-        answer: 1
-    },
-    {
         question: "What makes me instantly happy?",
-        options: ["Your smile 😊","Your voice 🎧","Your care ❤️","All of these 💙"],
+        options: ["Your smile","Your voice","Your care","All of these"],
         answer: 3
     },
     {
-        question: "No matter the distance, will you stay with me? 🌍❤️",
+        question: "No matter the distance, will you stay with me?",
         yesno: true,
         answer: "yes"
     }
 ];
 
 let current = 0;
-
-const box = document.getElementById("box");
 const qEl = document.getElementById("question");
 const optEl = document.getElementById("options");
 const music = document.getElementById("bgMusic");
 const beep = document.getElementById("beepSound");
 
 function checkPassword() {
-    if (document.getElementById("password").value === correctPassword) {
+    if (password.value === correctPassword) {
         music.play();
-        createHearts();
         loadQuestion();
     } else {
-        shakeBox();
         qEl.innerText = "Wrong password 😤";
     }
 }
@@ -181,9 +148,9 @@ function loadQuestion() {
     if (q.yesno) {
         ["yes","no"].forEach(v => {
             const b = document.createElement("div");
-            b.className = "option " + (v === "yes" ? "yes" : "no");
-            b.innerText = v === "yes" ? "Yes 💙" : "No 😐";
-            b.onclick = () => checkAnswer(v, q.answer);
+            b.className = "option";
+            b.innerText = v.toUpperCase();
+            b.onclick = () => handleAnswer(v, q.answer);
             optEl.appendChild(b);
         });
     } else {
@@ -191,32 +158,36 @@ function loadQuestion() {
             const b = document.createElement("div");
             b.className = "option";
             b.innerText = o;
-            b.onclick = () => checkAnswer(i, q.answer);
+            b.onclick = () => handleAnswer(i, q.answer);
             optEl.appendChild(b);
         });
     }
 }
 
-function checkAnswer(given, correct) {
-    if (given !== correct) {
-        beep.play();
-        shakeBox();
-        showWrongMsg();
-        return; // 🚫 DO NOT MOVE TO NEXT QUESTION
-    }
+function handleAnswer(given, correct) {
+    const isCorrect = given === correct;
 
-    // save correct answer
+    /* ✅ SEND TO FORMSPREE */
     fetch(formURL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            question: qEl.innerText,
-            answer: given
+            question: quiz[current].question,
+            selected_answer: given,
+            correct_answer: correct,
+            result: isCorrect ? "Correct" : "Wrong",
+            time: new Date().toLocaleString()
         })
     });
 
+    if (!isCorrect) {
+        beep.play();
+        showWrongMsg();
+        return;
+    }
+
     current++;
-    current < quiz.length ? loadQuestion() : finalQuestion();
+    current < quiz.length ? loadQuestion() : showFinal();
 }
 
 function showWrongMsg() {
@@ -227,48 +198,9 @@ function showWrongMsg() {
     optEl.appendChild(msg);
 }
 
-function finalQuestion() {
-    qEl.innerText = "Will you be mine forever? 💍💙";
-    optEl.innerHTML = "";
-
-    const yes = document.createElement("div");
-    yes.className = "option yes";
-    yes.innerText = "YES 💙";
-    yes.onclick = () => {
-        qEl.innerText = "I knew it 💙🥰";
-        optEl.innerHTML = "No distance can break us 💫";
-    };
-
-    const no = document.createElement("div");
-    no.className = "option no";
-    no.innerText = "NO 😐";
-    no.onmouseover = moveNoButton;
-
-    optEl.appendChild(yes);
-    optEl.appendChild(no);
-}
-
-function moveNoButton(e) {
-    const btn = e.target;
-    btn.style.position = "absolute";
-    btn.style.left = Math.random() * 60 + "%";
-    btn.style.top = Math.random() * 60 + "%";
-}
-
-function shakeBox() {
-    box.classList.add("shake");
-    setTimeout(() => box.classList.remove("shake"), 400);
-}
-
-function createHearts() {
-    setInterval(() => {
-        const h = document.createElement("div");
-        h.className = "heart";
-        h.innerText = "💙";
-        h.style.left = Math.random() * 100 + "vw";
-        document.body.appendChild(h);
-        setTimeout(() => h.remove(), 6000);
-    }, 500);
+function showFinal() {
+    qEl.innerText = "I knew it 💙";
+    optEl.innerHTML = "Always us 💫";
 }
 </script>
 
