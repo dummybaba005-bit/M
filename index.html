@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>For My Love 💙</title>
+<title>My Love 💙</title>
 
 <style>
 body {
@@ -65,10 +65,12 @@ body {
     color: #fff;
 }
 
+/* BIGGER wrong message */
 .wrong-msg {
-    margin-top: 10px;
-    font-size: 14px;
-    opacity: 0.95;
+    margin-top: 15px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffeb3b;
 }
 
 /* floating hearts */
@@ -99,14 +101,14 @@ input {
 
 <body>
 
-<!-- 🎵 Tamil-style romantic instrumental (autoplay-safe) -->
+<!-- 🎵 OLD background music (kept) -->
 <audio id="bgMusic" loop>
-  <source src="https://cdn.pixabay.com/audio/2023/03/30/audio_3b7a7a2c2e.mp3" type="audio/mpeg">
+  <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3" type="audio/mpeg">
 </audio>
 
-<!-- angry sound -->
-<audio id="angrySound">
-  <source src="https://www.soundjay.com/human/grunt-1.mp3" type="audio/mpeg">
+<!-- 🔊 Wrong answer beep -->
+<audio id="beepSound">
+  <source src="https://www.soundjay.com/buttons/sounds/beep-07.mp3" type="audio/mpeg">
 </audio>
 
 <div class="quiz-box" id="box">
@@ -121,7 +123,7 @@ input {
 </div>
 
 <script>
-const formURL = "https://formspree.io/f/mykpnbez";
+const formURL = "PASTE_YOUR_FORMSPREE_URL_HERE";
 const correctPassword = "20062000";
 
 const quiz = [
@@ -138,7 +140,7 @@ const quiz = [
     {
         question: "If we fight, who should say sorry first?",
         options: ["You 😏","Me 😇","Both 🤝","No fighting allowed ❌"],
-        answer: 2
+        answer: 1
     },
     {
         question: "What makes me instantly happy?",
@@ -158,7 +160,7 @@ const box = document.getElementById("box");
 const qEl = document.getElementById("question");
 const optEl = document.getElementById("options");
 const music = document.getElementById("bgMusic");
-const angry = document.getElementById("angrySound");
+const beep = document.getElementById("beepSound");
 
 function checkPassword() {
     if (document.getElementById("password").value === correctPassword) {
@@ -166,7 +168,6 @@ function checkPassword() {
         createHearts();
         loadQuestion();
     } else {
-        angry.play();
         shakeBox();
         qEl.innerText = "Wrong password 😤";
     }
@@ -182,7 +183,7 @@ function loadQuestion() {
             const b = document.createElement("div");
             b.className = "option " + (v === "yes" ? "yes" : "no");
             b.innerText = v === "yes" ? "Yes 💙" : "No 😐";
-            b.onclick = () => handleAnswer(v, q.answer);
+            b.onclick = () => checkAnswer(v, q.answer);
             optEl.appendChild(b);
         });
     } else {
@@ -190,33 +191,39 @@ function loadQuestion() {
             const b = document.createElement("div");
             b.className = "option";
             b.innerText = o;
-            b.onclick = () => handleAnswer(i, q.answer);
+            b.onclick = () => checkAnswer(i, q.answer);
             optEl.appendChild(b);
         });
     }
 }
 
-function handleAnswer(given, correct) {
+function checkAnswer(given, correct) {
     if (given !== correct) {
-        angry.play();
+        beep.play();
         shakeBox();
         showWrongMsg();
-
-        setTimeout(nextStep, 1500); // 👈 FIXED
-    } else {
-        nextStep();
+        return; // 🚫 DO NOT MOVE TO NEXT QUESTION
     }
-}
 
-function nextStep() {
+    // save correct answer
+    fetch(formURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            question: qEl.innerText,
+            answer: given
+        })
+    });
+
     current++;
     current < quiz.length ? loadQuestion() : finalQuestion();
 }
 
 function showWrongMsg() {
+    if (document.querySelector(".wrong-msg")) return;
     const msg = document.createElement("div");
     msg.className = "wrong-msg";
-    msg.innerText = "I liked your over confidence 😌 but as usual you’re wrong 😜";
+    msg.innerHTML = "I liked your over confidence 😌<br>but as usual you’re wrong 😜";
     optEl.appendChild(msg);
 }
 
