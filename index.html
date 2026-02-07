@@ -48,10 +48,7 @@ body{
   user-select:none;
 }
 
-.option:hover{
-  background:#bbdefb;
-}
-
+.option:hover{background:#bbdefb;}
 .yes{background:#2196f3;color:#fff;}
 .no{background:#1565c0;color:#fff;}
 
@@ -64,7 +61,6 @@ input{
   font-size:16px;
 }
 
-/* wrong msg */
 .wrong-msg{
   margin-top:16px;
   font-size:18px;
@@ -80,7 +76,6 @@ input{
   animation:floatUp 6s linear infinite;
   opacity:.7;
 }
-
 @keyframes floatUp{
   to{transform:translateY(-110vh);opacity:0;}
 }
@@ -93,7 +88,6 @@ input{
   filter:blur(6px) brightness(.55);
   z-index:1;
 }
-
 .final-popup{
   position:fixed;
   inset:0;
@@ -102,7 +96,6 @@ input{
   align-items:center;
   z-index:2;
 }
-
 .final-card{
   background:rgba(15,76,129,.9);
   padding:30px;
@@ -112,7 +105,6 @@ input{
   text-align:center;
   box-shadow:0 20px 50px rgba(0,0,0,.6);
 }
-
 .final-card img{
   width:150px;
   height:150px;
@@ -127,12 +119,12 @@ input{
 <body>
 
 <!-- 🎵 Background music -->
-<audio id="bgMusic" loop>
+<audio id="bgMusic" loop preload="auto">
   <source src="https://www.bensound.com/bensound-music/bensound-romantic.mp3">
 </audio>
 
-<!-- 🔔 Soft beep -->
-<audio id="beep">
+<!-- 🔔 Soft beep (FIXED) -->
+<audio id="beep" preload="auto">
   <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_4b6f8f62b6.mp3">
 </audio>
 
@@ -150,7 +142,6 @@ input{
 <script>
 /* 🔴 PUT YOUR FORMSPREE URL HERE */
 const formURL = "https://formspree.io/f/mykpnbez";
-
 const PASSWORD = "20062000";
 
 const quiz = [
@@ -178,9 +169,15 @@ const optEl = document.getElementById("options");
 const music = document.getElementById("bgMusic");
 const beep = document.getElementById("beep");
 
+beep.volume = 0.3; // 👈 soft, non-scary
+
 function checkPassword(){
   if(password.value === PASSWORD){
     music.play();
+
+    // 🔓 unlock beep once (CRITICAL FIX)
+    beep.play().then(()=>{beep.pause();beep.currentTime=0;});
+
     createHearts();
     loadQuestion();
   }else{
@@ -208,10 +205,9 @@ function checkAnswer(given,correct){
     beep.currentTime = 0;
     beep.play();
     showWrong();
-    return; // ❌ stop, no submission
+    return;
   }
 
-  // ✅ correct → send ONCE
   fetch(formURL,{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
@@ -286,4 +282,3 @@ function createHearts(){
 
 </body>
 </html>
-
